@@ -31,3 +31,30 @@ compile or flash a device.
 The bakasu-susfs-4.14 branch remains on SUSFS v1.5.5, with prior
 boot evidence and a separate signed memcg LRU accounting source patch.
 It should not be labeled as v2.x without actual integration.
+
+## Linux 4.14 fsnotify adapter (implemented, compile-tested)
+
+A reusable prototype for the fsnotify callback ABI difference is now located at:
+- include/linux/susfs23_fsnotify_compat_414.h
+- fs/notify/susfs23_fsnotify_compat_414.c
+
+Upstream SUSFS 2.3.0 targets fsnotify_ops.handle_inode_event, whereas the
+vendor 4.14 ABI uses fsnotify_ops.handle_event with additional inode/mark,
+data, name and iterator arguments. The adapter handles the 4.14 signature
+and converts its NUL-terminated filename to the bounded qstr representation
+used by newer callbacks.
+
+This file is deliberately **not linked into the production kernel**. It is
+a reusable API prototype with a no-op observer, not a functioning SUSFS 2.3
+installation. It does not register watchers or manipulate mounts or files.
+
+Compile-stage verification on the actual ARM64/4.14 vendor tree:
+
+    make O=out ARCH=arm64 agate_defconfig
+    make -j2 O=out ARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1 \
+      CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
+      fs/notify/susfs23_fsnotify_compat_414.o
+
+PASS: ELF64 AArch64 relocatable object generated, and 4 focused
+source/invariant tests passed. This **does not** prove runtime callback
+semantics or make the upstream 2.3 source license-compatible with GPLv2.
