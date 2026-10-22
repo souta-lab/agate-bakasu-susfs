@@ -1,6 +1,6 @@
 # agate-bakasu-susfs
 
-**Buildable BakaSU + SUSFS v1.5.5 (legacy) port; runtime validation pending.**
+**Boot-tested BakaSU + SUSFS v1.5.5 (legacy) port; experimental, with known kernel warning.**
 
 Custom Xiaomi 11T (agate / amber / MT6893) Linux 4.14.336 kernel project.
 
@@ -22,7 +22,9 @@ copyright, and GPL licensing are preserved.
   no runtime regression test yet.
 - Memory cgroup negative LRU count: root cause not yet isolated.
 - BakaSU + SUSFS legacy full Image.gz compilation and link succeeded locally.
-- Untested for device boot; no stable release.
+- Booted crDroid 12.10 / Android 16 on Xiaomi 11T; ReSukiSU Manager recognizes driver.
+- SUSFS legacy prctl interceptor passed a nonroot ABI smoke test.
+- memcg LRU accounting warning is still reproducible; no stable release.
 
 ## Build
 
@@ -38,3 +40,5 @@ Xiaomi MT6893 developers, Scaffold47 (snapshot distribution), BakaSU authors,
 simonpunk and SUSFS contributors, plus all authors credited in original kernel
 source. This project is independent on GitHub but does not erase upstream
 authorship, licensing, or technical provenance. See COPYING.
+
+Read [2026-10-22 device validation](docs/DEVICE_VALIDATION.md) for pass/fail evidence.
