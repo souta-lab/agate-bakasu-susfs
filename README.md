@@ -34,4 +34,8 @@ This GitHub repository was created independently (**not a GitHub fork**). Develo
 
 **Standalone BakaSU build:** [bakasu-only-4.14 branch](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-only-4.14) compiles BakaSU v4.2.0-rc3-dac2d186 successfully, with SUSFS explicitly disabled. The ARM64 Image.gz and an untested boot image exist locally, but have not been flashed or boot-tested. This is not a completed BakaSU + SUSFS release.
 
+**Integrated experimental source:** [bakasu-susfs-4.14](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-susfs-4.14) compiles BakaSU v4.2.0-rc3-dac2d186 and the legacy non-GKI SUSFS v1.5.5 together on Linux **4.14.336** (Manual Hook + SUSFS legacy mode). A full ARM64 kernel and unpack/repack-verified boot image were created, but **not flashed or boot-tested**. Linux 4.19 is not used.
+
+The workqueue warning has a candidate fix; the memory-cgroup/LRU warning remains under investigation. No stable release is claimed.
+
 See [diagnostic notes](docs/KNOWN_ISSUES.md).
