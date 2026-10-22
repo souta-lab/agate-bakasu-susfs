@@ -32,4 +32,6 @@ This GitHub repository was created independently (**not a GitHub fork**). Develo
 - The two reported kernel WARN events are under investigation; causes and patches are not yet verified.
 - This project's main branch will only carry documented project milestones and audited source, not an untested advertised release.
 
+**Standalone BakaSU build:** [bakasu-only-4.14 branch](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-only-4.14) compiles BakaSU v4.2.0-rc3-dac2d186 successfully, with SUSFS explicitly disabled. The ARM64 Image.gz and an untested boot image exist locally, but have not been flashed or boot-tested. This is not a completed BakaSU + SUSFS release.
+
 See [diagnostic notes](docs/KNOWN_ISSUES.md).
