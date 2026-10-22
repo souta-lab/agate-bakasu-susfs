@@ -1,0 +1,17 @@
+config FSNOTIFY
+	def_bool n
+	select SRCU
+
+config SUSFS23_FSNOTIFY_ABI_414
+	bool "Experimental Linux 4.14 fsnotify ABI compatibility helper"
+	depends on FSNOTIFY && ARM64
+	default n
+	help
+	  Build a generic ABI adapter for the Linux 4.14 fsnotify group,
+	  inode-mark and callback interfaces. No observers, watches, or
+	  root-hiding features are activated by this option. This is an
+	  intermediate compatibility component, not SUSFS 2.3.0.
+
+source "fs/notify/dnotify/Kconfig"
+source "fs/notify/inotify/Kconfig"
+source "fs/notify/fanotify/Kconfig"

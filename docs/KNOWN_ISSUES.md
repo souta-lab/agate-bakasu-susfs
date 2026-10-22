@@ -1,20 +1,22 @@
-# Kernel warnings to investigate
+# Known issues
 
-These warnings were captured on a Xiaomi 11T running crDroid 12.10 (Android 16), Linux 4.14.336 custom kernel, on 2026-10-22.
+Source status: BakaSU v4.2.0-rc3 + SUSFS v1.5.5 on Linux 4.14.336.
 
-## 1. Workqueue/device-mapper warning
+## Memory-cgroup negative LRU accounting (not root-cause resolved)
 
-- kernel/workqueue.c:2929 contains WARN_ON(!work->func).
-- apexd triggers the warning repeatedly while deleting device-mapper devices.
-- Backtrace contains flush_work -> __cancel_work_timer -> cancel_work_sync -> blk_cleanup_queue -> cleanup_mapped_device -> __dm_destroy -> dm_destroy.
-- Hypothesis: uninitialized or invalid work item in block cleanup, not proof of an apexd defect.
-- Validate initialization/cancellation lifecycle against upstream workqueue/block fixes, capture reproducer, and regression-test.
+On the 2026-10-22 test build, mm/memcontrol.c:1002 warned when HeapTaskDaemon released a page via madvise and the per-zone LRU count fell to -1.
 
-## 2. Memory cgroup / LRU accounting warning
+The development branch now includes an upstream-inspired backport of **signed LRU counters and read-side validity checks**. This is a substantive accounting hardening change, not proof that every missing charge/decharge has been fixed. The patch compiled; runtime retest is pending. See [MEMCG_LRU.md](MEMCG_LRU.md).
 
-- mm/memcontrol.c:1002 mem_cgroup_update_lru_size reports lru_size -1.
-- Observed in HeapTaskDaemon during madvise, page release and LRU accounting.
-- Requires diagnosis of mismatched page/zone/LRU tracking, not simply deleting WARN_ONCE.
-- Cross-check vendor page-accounting changes and upstream stable fixes.
+## Workqueue / device-mapper teardown
 
-Both warnings predate BakaSU integration in this project. Do not assert they are caused by BakaSU or already fixed.
+Previously: repeated WARN_ON(!work->func) in flush_work() while apexd removed device-mapper queues. The 4.14 source had bio queues that never installed a timeout work callback, but the teardown cancelled the work regardless.
+
+This branch guards cancel_work_sync() with an initialized work callback check in block/blk-core.c. The warning was absent from the captured first boot using that patch. Extended lifecycle regression testing remains pending.
+
+## Feature and manager compatibility
+
+- SUSFS 1.5.5 legacy ABI: smoke-tested; individual hiding/unmount/kstat operations have not been fully verified.
+- ReSukiSU Manager v4.2.0-rc3 (35171) is older than the pinned kernel driver (35236) and can show a manager-update prompt.
+- An app-specific root-grant test and longer-term stability tests remain outstanding.
+- No Android 16 ROM or device other than the documented crDroid Xiaomi 11T has been boot-tested.
