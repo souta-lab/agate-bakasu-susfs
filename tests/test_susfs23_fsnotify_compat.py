@@ -25,5 +25,8 @@ class TestCompat(unittest.TestCase):
         self.assertNotIn("sys_umount(", S)
         self.assertIn(".handle_event = susfs23_handle_event_414", S)
 
+    def test_name_hash_not_uninitialized(self):
+        self.assertIn("full_name_hash(NULL, (const char *)file_name, n)", S)
+
     def test_header_exposes_ops(self):
         self.assertIn("extern const struct fsnotify_ops", H)

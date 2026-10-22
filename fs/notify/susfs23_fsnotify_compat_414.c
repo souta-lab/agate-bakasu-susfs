@@ -11,6 +11,7 @@
 #include <linux/fsnotify_backend.h>
 #include <linux/limits.h>
 #include <linux/string.h>
+#include <linux/stringhash.h>
 #include <linux/susfs23_fsnotify_compat_414.h>
 
 int __weak susfs23_fsnotify_compat_observe_414(struct inode *inode, u32 mask,
@@ -41,7 +42,12 @@ static int susfs23_handle_event_414(struct fsnotify_group *group,
 
 	name.name = file_name;
 	name.len = n;
-	name.hash = 0;
+	/*
+	 * The parent dentry is unavailable in this callback signature.
+	 * Hash using the unsalted API; a consumer must not assume this hash
+	 * is suitable for a parent-specific dcache lookup.
+	 */
+	name.hash = full_name_hash(NULL, (const char *)file_name, n);
 	return susfs23_fsnotify_compat_observe_414(inode, mask, &name, cookie);
 }
 
