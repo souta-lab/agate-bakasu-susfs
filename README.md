@@ -107,8 +107,8 @@ Requires a Linux host, kernel build prerequisites and an ARM64-capable Proton Cl
 The source includes the BakaSU kernel component and its matching UAPI (no external KernelSU submodule required).
 
 ~~~bash
-git clone --branch feature/susfs-2.3.4.14-port https://github.com/souta-lab/agate-ksun-susfs.git
-cd agate-ksun-susfs
+git clone --branch feature/susfs-2.3.4.14-port https://github.com/souta-lab/agate-bakasu-susfs.git
+cd agate-bakasu-susfs
 TOOLCHAIN_DIR=/path/to/proton-clang BUILD_JOBS=2 ./build-agate.sh
 ~~~
 
