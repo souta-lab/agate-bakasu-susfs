@@ -18,10 +18,11 @@ copyright, and GPL licensing are preserved.
 
 - BakaSU upstream: pinned commit dac2d186406a0d2b0ce3c67cad5a1fa1adbf9f4d.
 - Linux 4.14.336 for Xiaomi 11T.
-- SUSFS 1.5.5: existing kernel-side code; upgrade/compatibility pending.
+- SUSFS 1.5.5: existing kernel-side code; BakaSU latest rejects it until proper API compatibility work is complete.
 - Workqueue/device mapper warning: targeted cleanup fix in block/blk-core.c;
   no runtime regression test yet.
 - Memory cgroup negative LRU count: root cause not yet isolated.
+- Kernel source compatibility hooks and select objects compile; upstream SUSFS compatibility check still blocks the full kernel build.
 - No BakaSU release or proven boot image.
 
 ## Build

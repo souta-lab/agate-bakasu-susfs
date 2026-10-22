@@ -42,3 +42,23 @@ Do not disable upstream diagnostics and present the result as verified.
 Build via ./build-agate.sh. No published BakaSU flashable release
 until full build, API compatibility, root permissions and stability tests pass.
 The existing phone was **not** flashed with this experimental branch.
+
+## Direct compilation results (2026-10-22)
+
+- BakaSU source discovered by kernel Kbuild: version 35236, v4.2.0-rc3-dac2d186.
+- CONFIG_KALLSYMS_ALL=y is required by the current BakaSU static symbol checks
+  on this Non-GKI 4.14 tree; enabled in agate_defconfig.
+- Legacy boolean gates in fs/read_write.c and drivers/input/input.c were
+  removed in favor of BakaSU's internal hook activation logic.
+- Required setresuid hook entry point was added to kernel/sys.c.
+- All BakaSU inline-hook entry-point checks now PASS.
+- Targeted object build PASSED: block/blk-core.o, kernel/sys.o,
+  fs/read_write.o, drivers/input/input.o.
+- Full BakaSU/SUSFS Kbuild still FAILS because BakaSU upstream
+  kernel/tools/susfs_compat.mk:20 deliberately aborts with
+  'Please wait susfs update.' No upstream safety/compatibility guard was
+  suppressed or bypassed to claim false success.
+- Build logs live locally at /mnt/storage/android-kernel-build/
+  bakasu-first-compile.log, bakasu-target-check2.log,
+  bakasu-compat-syntax2.log.
+- Absolutely NO new flashable release has been created or installed.
