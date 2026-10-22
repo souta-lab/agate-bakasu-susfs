@@ -1,13 +1,67 @@
-# SUSFS 2.3.0 / Linux 4.14 compatibility preflight
+# SUSFS 2.3.0 / Linux 4.14 port
 
-Current status: **not ported or built**. This isolated branch is a read-only
-compatibility preflight. The BakaSU + SUSFS v1.5.5 build-tested branch is unchanged.
+## Port status: **ported and build-verified** (branch `feature/susfs-2.3.4.14-port`)
+
+`BUILD_JOBS=2 ./build-agate.sh` succeeds and produces
+`artifacts/agate-bakasu-susfs-Image.gz` (proton-clang, arm64, CONFIG_KSU=y,
+CONFIG_KSU_SUSFS=y, CONFIG_THREAD_INFO_IN_TASK=y).
+`strings out/vmlinux` contains `susfs is initialized! version: v2.3.0`.
+
+The port started from the SUSFS v2.3.0 non-GKI Linux 4.9 port
+(`susfs-23-49/kernel_patches/50_add_susfs_in_kernel-4.9.patch`, 24 files /
+103 hunks) and the upstream v2.3.0 GKI 5.10 patch, then applied the following
+Linux 4.14 / MT6893 adaptations:
+
+- **statx**: 4.14 has statx, but `struct kstat` has no `mnt_id`. The 4.9 port's
+  local `STATX_SUS_KSTAT[_FUSE]` marker approach is kept; spoofing happens in
+  `vfs_getattr_nosec()`, and the syscall entry points are `vfs_statx()` /
+  `vfs_statx_fd()` (in 4.14 `vfs_stat()`/`vfs_fstat()`/`vfs_fstatat()` are
+  `include/linux/fs.h` inlines that delegate to those two functions).
+- **SUS_KSTAT size / vfs_statfs**: adapted the 4.9 `susfs_statfs_by_dentry()`
+  logic to 4.14's `const struct path *` signature; the 4.9 reference had the
+  spoof-result test inverted, so the 5.10 logic (only fall back to the real
+  `statfs` when spoofing fails) is used.
+- **fsnotify**: 4.14 `fsnotify_ops.handle_event` has 10 parameters (including
+  `fsnotify_iter_info`), `fsnotify_init_mark(mark, group)` and
+  `fsnotify_add_mark(mark, inode, mnt, allow_dups)` (group lives in the mark).
+  The 4.9 patch assumed the older 4.9 signatures and was fixed accordingly.
+- **fsnotify marks in `struct mount`**: 4.14 uses an `fsnotify_mark_connector
+  __rcu *`, not an hlist head; the copied `alloc_vfsmnt()` helpers were fixed.
+- **compat readdir**: 4.14 moved the compat readdir callbacks to
+  `fs/readdir.c` (`fs/compat.c` only keeps `compat_sys_mount`). The SUS_PATH
+  hooks were added to `compat_fillonedir()`/`compat_filldir()` there.
+  This vendor tree routes 32-bit `getdents64` to the native handler, which is
+  already hooked.
+- **smaps_rollup**: the vendor 4.14 tree backports `/proc/pid/smaps_rollup`
+  with a `smap_gather_stats(vma, mss)` signature (no `rollup_mode` argument),
+  so SUS_MAP skips entries per-VMA in `smap_gather_stats()`, `show_smap()` and
+  the `show_smaps_rollup()` loop.
+- **open redirect**: 4.14 `do_last()` resolves and opens the final component in
+  one step, so the 4.9 port's post-open re-open in `do_filp_open()` is used
+  (covers tmpfile/O_PATH/regular). `vfs_readlink()` exists in 4.14 and is
+  hooked in addition to `generic_readlink()`.
+- **`vfs_kern_mount` / IDA / `CL_COPY_MNT_NS` / `fs/proc/cmdline.c`**: kept the
+  4.9-port implementations; 4.14 still has `vfs_kern_mount`, the legacy
+  `ida_get_new_above()`/`ida_remove()` IDA API and no bootconfig.
+- **KernelSU side**: BakaSU's "SuSFS Inline hook" mode is used
+  (`CONFIG_KSU_SUSFS` as the KSU hook method, `CONFIG_KSU_MANUAL_HOOK` off).
+  The 1.5.5 legacy shims (`CFG_KSU_SUSFS_LEGACY`, `susfs_prctl`/`sus_su`) were
+  removed; BakaSU upstream KSU sources were restored, and its
+  `tools/susfs_compat.mk` unconditional "please wait for susfs update" guard
+  was relaxed because the v2.3.0 kernel side is now provided in-tree.
+  SUSFS supercalls go through `ksu_handle_sys_reboot()` -> `SUSFS_MAGIC` ->
+  `ksu_handle_susfs_cmd()`.
+
+The original 1.5.5 kernel hooks were removed before inserting the 2.3.0 hooks
+(commit `bb08f9bd2`); the 1.5.5 branch remains untouched in the other worktree.
+
+## Historical preflight notes
 
 The original SUSFS 2.3.0 source was examined at upstream commit
 f43926dc94b8ffbf9b74321313536600f69367b1 (2026-10-19), from the
 gki-android12-5.10 branch. The agate kernel source is 4.14.336.
 
-## Measured compatibility blockers
+### Measured compatibility blockers
 
 1. The original patch set targets Linux 5.10 and fails to apply to many
    changed Linux 4.14 vendor files. It is not a drop-in replacement.
@@ -30,7 +84,6 @@ compile or flash a device.
 
 The bakasu-susfs-4.14 branch remains on SUSFS v1.5.5, with prior
 boot evidence and a separate signed memcg LRU accounting source patch.
-It should not be labeled as v2.x without actual integration.
 
 ## Linux 4.14 fsnotify adapter (implemented, compile-tested)
 
