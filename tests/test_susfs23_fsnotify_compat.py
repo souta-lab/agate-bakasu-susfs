@@ -16,8 +16,8 @@ class TestCompat(unittest.TestCase):
             self.assertIn(field, S)
 
     def test_bounded_filename(self):
-        self.assertIn("strnlen((const char *)file_name, NAME_MAX)", S)
-        self.assertIn("if (!n || n >= NAME_MAX)", S)
+        self.assertIn("strnlen((const char *)file_name, NAME_MAX + 1)", S)
+        self.assertIn("if (!n || n > NAME_MAX)", S)
 
     def test_no_auto_registration_or_mount_hooks(self):
         self.assertNotIn("fsnotify_alloc_group(", S)

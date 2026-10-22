@@ -60,3 +60,4 @@ source/invariant tests passed. This **does not** prove runtime callback
 semantics or make the upstream 2.3 source license-compatible with GPLv2.
 
 The compatibility qstr is hashed with full_name_hash(NULL, ...); callers must not use it for parent-salted dcache lookup because the 4.14 callback does not provide the parent dentry. The callback-owned pointer is only usable synchronously.\n
+NAME_MAX-byte filenames are valid on Linux. The source probe reads at most NAME_MAX + 1 bytes to distinguish 255-byte valid names from over-limit names.\n

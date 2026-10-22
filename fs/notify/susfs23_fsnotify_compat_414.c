@@ -36,8 +36,9 @@ static int susfs23_handle_event_414(struct fsnotify_group *group,
 	if (!file_name || !inode_mark)
 		return 0;
 
-	n = strnlen((const char *)file_name, NAME_MAX);
-	if (!n || n >= NAME_MAX)
+	/* NAME_MAX bytes is a legal filename; accept it if terminated. */
+	n = strnlen((const char *)file_name, NAME_MAX + 1);
+	if (!n || n > NAME_MAX)
 		return 0;
 
 	name.name = file_name;
