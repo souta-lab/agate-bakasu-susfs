@@ -1,13 +1,12 @@
 # agate-bakasu-susfs
 
-**Development branch — NOT flashable, NOT verified.**
+**Buildable BakaSU + SUSFS v1.5.5 (legacy) port; runtime validation pending.**
 
 Custom Xiaomi 11T (agate / amber / MT6893) Linux 4.14.336 kernel project.
 
-This branch pins **BakaSU** as a submodule and retains the kernel-side
-SUSFS non-GKI port as a starting point. Integration with current BakaSU
-is NOT yet verified: current BakaSU's inline hook validation explicitly
-rejects older hook implementations and expects an updated SUSFS API.
+This branch vendors **BakaSU v4.2.0-rc3** kernel code and integrates it
+with the existing **Linux 4.14 SUSFS v1.5.5** implementation via Manual
+Hook + legacy SUSFS mode. This DOES NOT claim SUSFS v2.x API support.
 
 The baseline is the **Xiaomi MT6893 kernel development tree** as distributed
 in Scaffold47/agate-ksun-susfs. This kernel is **not described as a Hydrogen
@@ -18,12 +17,12 @@ copyright, and GPL licensing are preserved.
 
 - BakaSU upstream: pinned commit dac2d186406a0d2b0ce3c67cad5a1fa1adbf9f4d.
 - Linux 4.14.336 for Xiaomi 11T.
-- SUSFS 1.5.5: existing kernel-side code; BakaSU latest rejects it until proper API compatibility work is complete.
+- SUSFS 1.5.5: legacy non-GKI kernel features integrated with BakaSU via Manual Hook.
 - Workqueue/device mapper warning: targeted cleanup fix in block/blk-core.c;
   no runtime regression test yet.
 - Memory cgroup negative LRU count: root cause not yet isolated.
-- Kernel source compatibility hooks and select objects compile; upstream SUSFS compatibility check still blocks the full kernel build.
-- No BakaSU release or proven boot image.
+- BakaSU + SUSFS legacy full Image.gz compilation and link succeeded locally.
+- Untested for device boot; no stable release.
 
 ## Build
 

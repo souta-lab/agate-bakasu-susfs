@@ -14,16 +14,6 @@ extern bool is_zygote(const struct cred *cred);
 extern void susfs_run_try_umount_for_current_mnt_ns(void);
 #endif
 
-bool susfs_is_current_ksu_domain(void)
-{
-	return is_ksu_domain();
-}
-
-bool susfs_is_current_zygote_domain(void)
-{
-	return is_zygote(current_cred());
-}
-
 static bool susfs_access_ok(const void __user *addr, unsigned long size)
 {
 	return access_ok(VERIFY_READ, addr, size);

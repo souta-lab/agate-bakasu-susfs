@@ -1,6 +1,6 @@
 # Flashing
 
-**No BakaSU build from this branch is validated or approved for flashing.**
+**No BakaSU + SUSFS build from this branch has been device-boot-tested yet.**
 
 A successful Image.gz compile is insufficient to validate runtime KSU, SUSFS,
 DTB compatibility, module ABI, partition layout, or stability.

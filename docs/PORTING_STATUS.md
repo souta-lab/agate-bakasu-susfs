@@ -62,3 +62,13 @@ The existing phone was **not** flashed with this experimental branch.
   bakasu-first-compile.log, bakasu-target-check2.log,
   bakasu-compat-syntax2.log.
 - Absolutely NO new flashable release has been created or installed.
+
+
+## 2026-10-22: Linux 4.14 dual-mode compatibility
+- Vendored BakaSU v4.2.0-rc3-dac2d186 kernel portion under BakaSU/kernel with GPL-2.0 license and original SHA.
+- Linux 4.14 chooses Manual Hook and includes the v1.5.5 legacy SUSFS userspace prctl protocol.
+- New SUSFS 2.x supercall implementation is NOT claimed; this is v1.5.5 compatibility.
+- Kernel Kbuild supports KSU_MANUAL_HOOK=y and KSU_SUSFS=y simultaneously with KSU_SUSFS_LEGACY=y.
+- Avoids importing modern SUSFS 2.x hooks and avoids duplicating SELinux bridge symbols.
+- Full vmlinux and Image.gz link successful with Proton Clang 15.0.0.
+- Runtime behavior and the negative LRU warning still require device tests.

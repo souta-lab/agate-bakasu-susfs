@@ -10,7 +10,7 @@ if [[ ! -x "$TOOLCHAIN_DIR/bin/clang" ]]; then
   exit 2
 fi
 if [[ ! -d BakaSU/kernel ]]; then
-  echo "BakaSU submodule missing. Initialize it first." >&2
+  echo "Vendored BakaSU kernel sources missing." >&2
   exit 2
 fi
 export PATH="$TOOLCHAIN_DIR/bin:$PATH"

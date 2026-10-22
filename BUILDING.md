@@ -1,7 +1,6 @@
 # Building experimental BakaSU kernel
 
-Run from the development branch after submodules are initialized:
-    git submodule update --init --recursive
+Run from the source branch with the bundled BakaSU source:
     TOOLCHAIN_DIR=/path/to/proton-clang BUILD_JOBS=2 ./build-agate.sh
 
 Script uses agate_defconfig and requires KSU + KSU_SUSFS. It outputs
