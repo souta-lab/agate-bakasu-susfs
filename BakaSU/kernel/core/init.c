@@ -122,9 +122,6 @@ static inline void __init ksu_hook_init(void)
 #else
 #error "Unsupported hook type"
 #endif
-#ifdef CONFIG_KSU_SUSFS_LEGACY
-    susfs_init();
-#endif
 }
 
 static inline void __exit ksu_hook_exit(void)

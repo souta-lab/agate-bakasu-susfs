@@ -277,8 +277,13 @@ static struct mount *susfs_alloc_unshare_ksu_vfsmnt(const char *name, int old_mn
 		INIT_LIST_HEAD(&mnt->mnt_slave);
 		INIT_HLIST_NODE(&mnt->mnt_mp_list);
 		INIT_LIST_HEAD(&mnt->mnt_umounting);
+		/*
+		 * Linux 4.14 stores fsnotify marks as an RCU pointer that
+		 * kmem_cache_zalloc() already clears, not as an hlist head.
+		 */
 #ifdef CONFIG_FSNOTIFY
-		INIT_HLIST_HEAD(&mnt->mnt_fsnotify_marks);
+		mnt->mnt_fsnotify_marks = NULL;
+		mnt->mnt_fsnotify_mask = 0;
 #endif
 		init_fs_pin(&mnt->mnt_umount, drop_mountpoint);
 	}
@@ -341,8 +346,13 @@ retry:
 		INIT_LIST_HEAD(&mnt->mnt_slave);
 		INIT_HLIST_NODE(&mnt->mnt_mp_list);
 		INIT_LIST_HEAD(&mnt->mnt_umounting);
+		/*
+		 * Linux 4.14 stores fsnotify marks as an RCU pointer that
+		 * kmem_cache_zalloc() already clears, not as an hlist head.
+		 */
 #ifdef CONFIG_FSNOTIFY
-		INIT_HLIST_HEAD(&mnt->mnt_fsnotify_marks);
+		mnt->mnt_fsnotify_marks = NULL;
+		mnt->mnt_fsnotify_mask = 0;
 #endif
 		init_fs_pin(&mnt->mnt_umount, drop_mountpoint);
 	}

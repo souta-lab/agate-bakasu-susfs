@@ -101,7 +101,7 @@ static void stop_execve_hook(void);
         bool ret = schedule_work(&stop_input_hook_work);
         pr_info("unregister input kprobe: %d!\n", ret);
     }
-#elif defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#elif defined(CONFIG_KSU_SUSFS)
     DEFINE_STATIC_KEY_TRUE(ksu_is_init_rc_hook_enabled);
     DEFINE_STATIC_KEY_TRUE(ksu_is_input_hook_enabled);
 

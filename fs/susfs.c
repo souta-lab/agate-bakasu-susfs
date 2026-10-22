@@ -1448,13 +1448,26 @@ static const struct fsnotify_ops fsnotify_ops = {
 	.handle_inode_event = susfs_handle_sdcard_inode_event,
 };
 #else
-/* Kernel 4.9 uses handle_event with a different signature */
+/*
+ * Kernels older than 5.1 (4.9 and the 4.14 vendor kernel here) use
+ * handle_event. Linux 4.14 additionally passes fsnotify_iter_info.
+ */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 0)
+static int susfs_handle_sdcard_event_compat(struct fsnotify_group *group,
+	struct inode *inode,
+	struct fsnotify_mark *inode_mark,
+	struct fsnotify_mark *vfsmount_mark,
+	u32 mask, const void *data, int data_type,
+	const unsigned char *file_name, u32 cookie,
+	struct fsnotify_iter_info *iter_info)
+#else
 static int susfs_handle_sdcard_event_compat(struct fsnotify_group *group,
 	struct inode *inode,
 	struct fsnotify_mark *inode_mark,
 	struct fsnotify_mark *vfsmount_mark,
 	u32 mask, void *data, int data_type,
 	const unsigned char *file_name, u32 cookie)
+#endif
 {
 	struct qstr qname;
 	if (!file_name)
@@ -1481,6 +1494,11 @@ static int add_mark_on_inode(struct inode *inode, u32 mask,
 	fsnotify_init_mark(m, g);
 	m->mask = mask;
 	if (fsnotify_add_inode_mark(m, inode, 0)) {
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(4, 13, 0)
+	/* Linux 4.13+ carries the group in the mark itself. */
+	fsnotify_init_mark(m, g);
+	m->mask = mask;
+	if (fsnotify_add_mark(m, inode, NULL, 0)) {
 #else
 	fsnotify_init_mark(m, NULL);
 	m->mask = mask;

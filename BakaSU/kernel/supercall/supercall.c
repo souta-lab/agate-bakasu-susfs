@@ -108,7 +108,7 @@ bool ksu_is_su_session_fd(const struct file *filp)
 extern int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg);
 #endif
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 extern int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg);
 #endif
 
@@ -136,7 +136,7 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
 
     // extensions
 
-#if !defined(CONFIG_KSU_TOOLKIT_SUPPORT) && (!defined(CONFIG_KSU_SUSFS) || defined(CONFIG_KSU_SUSFS_LEGACY))
+#if !defined(CONFIG_KSU_TOOLKIT_SUPPORT) && !defined(CONFIG_KSU_SUSFS)
     return 0;
 #endif
 
@@ -150,7 +150,7 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
         return 0;
 #endif
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
     // If magic2 is susfs and current process is root
     if (magic2 == SUSFS_MAGIC) {
         return ksu_handle_susfs_cmd(cmd, arg);

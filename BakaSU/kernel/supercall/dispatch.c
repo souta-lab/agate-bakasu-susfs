@@ -171,7 +171,7 @@ static int do_report_event(void __user *arg)
             } else {
                 pr_info("boot_complete triggered\n");
                 on_boot_completed();
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
                 susfs_start_sdcard_monitor_fn();
 #endif
             }
@@ -537,7 +537,7 @@ static int do_manage_mark(void __user *arg)
             return ret;
         }
         cmd.result = (u32)ret;
-#elif defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#elif defined(CONFIG_KSU_SUSFS)
         if (susfs_is_current_proc_umounted()) {
             ret = 0; // SYSCALL_TRACEPOINT is NOT flagged
         } else {
@@ -912,7 +912,7 @@ static int do_get_hook_type(void __user *arg)
     const char *type = "Tracepoint Syscall Redirect";
 #elif defined(CONFIG_KSU_MANUAL_HOOK)
     const char *type = "Manual";
-#elif defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#elif defined(CONFIG_KSU_SUSFS)
     const char *type = "Inline";
 #else
 #error "Unsupported hook type"
@@ -1004,7 +1004,7 @@ static int do_get_kernel_patch_implement(void __user *arg)
     return 0;
 }
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 int ksu_handle_susfs_cmd(unsigned int cmd, void __user **arg)
 {
     switch (cmd) {

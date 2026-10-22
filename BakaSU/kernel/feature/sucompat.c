@@ -22,12 +22,12 @@
 #include <linux/sched.h>
 #endif
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 #include <linux/susfs_def.h>
 #include <linux/namei.h>
 #include "selinux/selinux.h"
 #include "objsec.h"
-#endif // #if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 #include "arch.h"
 #include "policy/allowlist.h"
@@ -514,7 +514,7 @@ int ksu_handle_post_execveat(int *fd, struct filename **filename_ptr, void *argv
 }
 
 // compat for check in hook
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 int ksu_handle_execveat_sucompat(int *fd, struct filename **filename_ptr, void *argv, void *envp, int *flags)
 {
     // workaround susfs codes as below
@@ -534,7 +534,7 @@ int ksu_handle_post_execveat_sucompat(int *fd, struct filename **filename_ptr, v
 #endif
 #endif
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 int ksu_handle_faccessat(int *dfd, struct filename **filename, int *mode, int *__unused_flags)
 {
     const struct cred *old_cred;
@@ -608,7 +608,7 @@ int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,
 }
 #endif
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 int ksu_handle_stat(int *dfd, struct filename **filename, int *flags)
 {
     const struct cred *old_cred;

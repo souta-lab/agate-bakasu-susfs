@@ -101,23 +101,16 @@ config KSU_MANUAL_HOOK
 	  with a manually-patched function.
 	  Support for kernel 3.4+
 
+config KSU_SUSFS
+	bool "SUSFS Inline Hook"
+	depends on THREAD_INFO_IN_TASK && 64BIT
+	help
+	  Patch and Enable SUSFS to kernel with KernelSU.
+	  SuSFS Officially support kernel 5.10+
+	  This KSU driver support it for 4.3+ in KSU side, 
+	  But the kernel side susfs compatibility MUST completed by yourself.
 
 endchoice
-
-# Legacy non-GKI SUSFS is independent from the BakaSU hook method.
-# This allows Manual Hook and SUSFS to coexist on Linux 4.14.
-config KSU_SUSFS
-    bool "SUSFS 1.5.x legacy kernel integration"
-    depends on KSU && 64BIT && THREAD_INFO_IN_TASK
-    default n
-    help
-      Enable the legacy SUSFS implementation from the MT6893 device tree.
-      This does not implement the current SUSFS 2.x API.
-
-config KSU_SUSFS_LEGACY
-    bool
-    depends on KSU_SUSFS && KSU_MANUAL_HOOK
-    default y
 
 menu "KernelSU - Manual Hook Auto hook"
     depends on KSU_MANUAL_HOOK

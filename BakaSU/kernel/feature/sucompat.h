@@ -14,14 +14,14 @@ void ksu_sucompat_init(void);
 void ksu_sucompat_exit(void);
 
 // Handler functions exported for hook_manager
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 int ksu_handle_faccessat(int *dfd, struct filename **filename, int *mode, int *__unused_flags);
 int ksu_handle_stat(int *dfd, struct filename **filename, int *flags);
 #else
 int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode, int *__unused_flags);
 int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags);
 int ksu_handle_post_execve(int *fd, const char *filename, void *argv, void *envp, int *flags, int *retval);
-#endif // #if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
 #include <asm/current.h>
@@ -40,7 +40,7 @@ long ksu_handle_execveat_sucompat_internal(const char __user **filename_user, in
 #define ksu_set_current_proc_unprivillege() ksu_clear_task_tracepoint_flag_if_needed(current)
 #define ksu_clear_current_proc_unprivillege() ksu_set_task_tracepoint_flag(current)
 
-#elif defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY) // new SUSFS
+#elif defined(CONFIG_KSU_SUSFS) // susfs
 #include <linux/susfs_def.h>
 
 // sync with manual hook

@@ -11,9 +11,9 @@
 #include <linux/types.h>
 #include <linux/uaccess.h>
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 #include <linux/susfs_def.h>
-#endif // #if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 #include "feature/kernel_umount.h"
 #include "klog.h" // IWYU pragma: keep
@@ -74,7 +74,7 @@ void try_umount(const char *mnt, int flags)
     ksu_umount_mnt(mnt, &path, flags);
 }
 
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
 extern struct work_struct susfs_extra_works;
 #endif
 
@@ -140,7 +140,7 @@ int ksu_handle_umount(uid_t old_uid, uid_t new_uid)
 
 skip_umount_task:
     // do susfs setuid when susfs enabled
-#if defined(CONFIG_KSU_SUSFS) && !defined(CONFIG_KSU_SUSFS_LEGACY)
+#ifdef CONFIG_KSU_SUSFS
     if (!work_pending(&susfs_extra_works))
         schedule_work(&susfs_extra_works);
     susfs_set_current_proc_umounted();
