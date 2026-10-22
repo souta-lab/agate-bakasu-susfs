@@ -112,7 +112,7 @@ struct mem_cgroup_per_node {
 	struct lruvec_stat __percpu *lruvec_stat_cpu;
 	atomic_long_t		lruvec_stat[NR_VM_NODE_STAT_ITEMS];
 
-	unsigned long		lru_zone_size[MAX_NR_ZONES][NR_LRU_LISTS];
+	long			lru_zone_size[MAX_NR_ZONES][NR_LRU_LISTS];
 
 	struct mem_cgroup_reclaim_iter	iter[DEF_PRIORITY + 1];
 
@@ -455,6 +455,22 @@ void mem_cgroup_update_lru_size(struct lruvec *lruvec, enum lru_list lru,
 unsigned long mem_cgroup_node_nr_lru_pages(struct mem_cgroup *memcg,
 					   int nid, unsigned int lru_mask);
 
+/*
+ * Do not expose a negative memcg LRU count as an enormous unsigned count
+ * to reclaim. Check when the value is consumed, not at every LRU update.
+ * Keep the signed imbalance for debugging rather than silently resetting it.
+ *
+ * Adapted from the 2026 upstream mm/memcontrol LRU accounting work:
+ * https://lists.openwall.net/linux-kernel/2026/09/05/707
+ */
+static inline unsigned long mem_cgroup_lru_size_or_zero(long size)
+{
+	if (WARN_ON_ONCE(size < 0))
+		return 0;
+
+	return size;
+}
+
 static inline
 unsigned long mem_cgroup_get_lru_size(struct lruvec *lruvec, enum lru_list lru)
 {
@@ -464,7 +480,8 @@ unsigned long mem_cgroup_get_lru_size(struct lruvec *lruvec, enum lru_list lru)
 
 	mz = container_of(lruvec, struct mem_cgroup_per_node, lruvec);
 	for (zid = 0; zid < MAX_NR_ZONES; zid++)
-		nr_pages += mz->lru_zone_size[zid][lru];
+		nr_pages += mem_cgroup_lru_size_or_zero(
+			READ_ONCE(mz->lru_zone_size[zid][lru]));
 	return nr_pages;
 }
 
@@ -475,7 +492,8 @@ unsigned long mem_cgroup_get_zone_lru_size(struct lruvec *lruvec,
 	struct mem_cgroup_per_node *mz;
 
 	mz = container_of(lruvec, struct mem_cgroup_per_node, lruvec);
-	return mz->lru_zone_size[zone_idx][lru];
+	return mem_cgroup_lru_size_or_zero(
+		READ_ONCE(mz->lru_zone_size[zone_idx][lru]));
 }
 
 void mem_cgroup_handle_over_high(void);

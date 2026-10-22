@@ -1563,10 +1563,7 @@ int __isolate_lru_page(struct page *page, isolate_mode_t mode)
 }
 
 
-/*
- * Update LRU sizes after isolating pages. The LRU size updates must
- * be complete before mem_cgroup_update_lru_size due to a santity check.
- */
+/* Update LRU sizes after isolating pages. */
 static __always_inline void update_lru_sizes(struct lruvec *lruvec,
 			enum lru_list lru, unsigned long *nr_zone_taken)
 {
