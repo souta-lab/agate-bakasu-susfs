@@ -1,41 +1,52 @@
 # agate-bakasu-susfs
 
-Independent kernel development for **Xiaomi 11T (agate / MT6893)**.
+**BakaSU + legacy SUSFS kernel project for Xiaomi 11T (agate / MT6893), Linux 4.14.336.**
 
-Goal: a reproducible **Linux 4.14.336** kernel integrating **BakaSU**, with a verified **SUSFS** backport and fixes for kernel warnings observed on crDroid 12.10 (Android 16).
+Independent GitHub repository built from the Xiaomi MT6893 kernel development tree distributed by Scaffold47. This project **is not Hydrogen-based**.
 
-> **Status: work in progress. There is no verified BakaSU release or flashable artifact from this repository yet. Do not flash development builds.**
+## Source code
 
-## Development targets
+The production of the experimental kernel is tracked in a separate branch:
 
-- Integrate a pinned, auditable BakaSU revision into the MT6893 4.14 kernel and retain working manual hooks.
-- Port and validate SUSFS features on Linux 4.14 without silently discarding behavior.
-- Investigate and correctly resolve (not suppress) these kernel warnings:
-  - kernel/workqueue.c:2929 flush_work(), observed repeatedly during apexd device-mapper cleanup.
-  - mm/memcontrol.c:1002 mem_cgroup_update_lru_size(), observed with lru_size -1.
-- Keep a reproducible build with Proton Clang 15 and explicit source versions.
-- Test boots, modules, SELinux, suspend, storage, and sustained performance on agate.
+**[bakasu-susfs-4.14 — full kernel source, build scripts, tests and technical documentation](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-susfs-4.14)**
 
-## Attribution and licensing
+This main branch is the project's landing page. To clone the actual integration source:
 
-Kernel source snapshot imported from [Scaffold47/agate-ksun-susfs](https://github.com/Scaffold47/agate-ksun-susfs), whose README attributes its kernel source to the Xiaomi MT6893 development tree. **This project does not claim to be Hydrogen-based or a Hydrogen integration.** Original Linux/Xiaomi/MT6893 source attributions and licensing notices are retained.
+~~~bash
+git clone -b bakasu-susfs-4.14 https://github.com/souta-lab/agate-bakasu-susfs.git
+cd agate-bakasu-susfs
+TOOLCHAIN_DIR=/path/to/proton-clang BUILD_JOBS=2 ./build-agate.sh
+~~~
 
-Potential BakaSU integration: [Baka-SU/BakaSU](https://github.com/Baka-SU/BakaSU). SUSFS sources and original authors' notices must be retained. Evaluate **GPL license compatibility** before distributing integrated binaries.
+The script builds Image.gz, not a complete boot.img or flashable ZIP.
 
-This GitHub repository was created independently (**not a GitHub fork**). Development and upstream credit are separate questions.
+## Integration
 
-## Current state
+| Component | Status |
+| --- | --- |
+| Linux 4.14.336 / Xiaomi MT6893 | Compiled and boot-tested on agate |
+| BakaSU v4.2.0-rc3, upstream dac2d186 | Boot-tested; ReSukiSU Manager recognizes driver 35236 |
+| SUSFS v1.5.5 Non-GKI | Legacy prctl ABI smoke-tested (not SUSFS 2.x) |
+| block/blk-core.c workqueue teardown fix | Included; original flush_work warning absent on the observed boot |
+| Signed memcg LRU accounting backport | Full ARM64 rebuild passed; **device retest outstanding** |
 
-- Independent repository created; the unmodified upstream kernel source snapshot is available on the [kernel-upstream-baseline](https://github.com/souta-lab/agate-bakasu-susfs/tree/kernel-upstream-baseline) branch (source commit: a94c15b31dc0).
-- Main intentionally contains documentation while BakaSU integration is developed and validated.
-- Known-good upstream-derived KernelSU Next + SUSFS 1.5.5 build exists locally, but it is not a BakaSU build.
-- The two reported kernel WARN events are under investigation; causes and patches are not yet verified.
-- This project's main branch will only carry documented project milestones and audited source, not an untested advertised release.
+## Validation and limitations
 
-**Standalone BakaSU build:** [bakasu-only-4.14 branch](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-only-4.14) compiles BakaSU v4.2.0-rc3-dac2d186 successfully, with SUSFS explicitly disabled. The ARM64 Image.gz and an untested boot image exist locally, but have not been flashed or boot-tested. This is not a completed BakaSU + SUSFS release.
+On 2026-10-22 the integrated kernel booted crDroid v12.10-20260518 (Android 16) on a Xiaomi 11T, with SELinux Enforcing. A non-privileged test confirmed that the legacy SUSFS prctl entry point was reachable.
 
-**Integrated experimental source:** [bakasu-susfs-4.14](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-susfs-4.14) compiles BakaSU v4.2.0-rc3-dac2d186 and the legacy non-GKI SUSFS v1.5.5 together on Linux **4.14.336** (Manual Hook + SUSFS legacy mode). A full ARM64 kernel and unpack/repack-verified boot image were created, but **not flashed or boot-tested**. Linux 4.19 is not used.
+The original build had a negative LRU-count warning in mem_cgroup_update_lru_size() during HeapTaskDaemon memory reclamation. The newer source backports the upstream Linux-mm signed LRU accounting and read-side checks, avoiding unsigned wraparound and preserving counter history. It is **not evidence that the underlying accounting mismatch has been fully resolved**. The new version has been compile-tested but not boot-tested. Individual SUSFS capabilities, application root grants, long-term stability, and other Android ROMs are also unverified.
 
-The workqueue warning has a candidate fix; the memory-cgroup/LRU warning remains under investigation. No stable release is claimed.
+**Experimental, no stable release.** Any device testing must be performed separately with a known-working recovery image.
 
-See [diagnostic notes](docs/KNOWN_ISSUES.md).
+## Documentation and history
+
+- [Integration README](https://github.com/souta-lab/agate-bakasu-susfs/blob/bakasu-susfs-4.14/README.md)
+- [Memory-cgroup LRU accounting notes](https://github.com/souta-lab/agate-bakasu-susfs/blob/bakasu-susfs-4.14/docs/MEMCG_LRU.md)
+- [Device test results](https://github.com/souta-lab/agate-bakasu-susfs/blob/bakasu-susfs-4.14/docs/DEVICE_VALIDATION.md)
+- [Known issues](https://github.com/souta-lab/agate-bakasu-susfs/blob/bakasu-susfs-4.14/docs/KNOWN_ISSUES.md)
+- [Original kernel snapshot](https://github.com/souta-lab/agate-bakasu-susfs/tree/kernel-upstream-baseline)
+- [Earlier BakaSU-only experiment](https://github.com/souta-lab/agate-bakasu-susfs/tree/bakasu-only-4.14)
+
+## Credits and licensing
+
+Kernel work is derived from Xiaomi MT6893 and Linux sources, through the Scaffold47 snapshot. BakaSU is by Baka-SU contributors; SUSFS by simonpunk and contributors. The integration branch preserves upstream authorship and GPL-2.0 licensing, including COPYING and BakaSU/kernel/LICENSE. Independent GitHub hosting does not erase original authorship.
