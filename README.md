@@ -18,7 +18,7 @@ Goal: a reproducible **Linux 4.14.336** kernel integrating **BakaSU**, with a ve
 
 ## Attribution and licensing
 
-Base kernel source and initial device integration: [Scaffold47/agate-ksun-susfs](https://github.com/Scaffold47/agate-ksun-susfs), based on [Hydrogen](https://github.com/rio004) and Linux kernel sources, with original copyright and licensing notices retained.
+Kernel source snapshot imported from [Scaffold47/agate-ksun-susfs](https://github.com/Scaffold47/agate-ksun-susfs), whose README attributes its kernel source to the Xiaomi MT6893 development tree. **This project does not claim to be Hydrogen-based or a Hydrogen integration.** Original Linux/Xiaomi/MT6893 source attributions and licensing notices are retained.
 
 Potential BakaSU integration: [Baka-SU/BakaSU](https://github.com/Baka-SU/BakaSU). SUSFS sources and original authors' notices must be retained. Evaluate **GPL license compatibility** before distributing integrated binaries.
 
