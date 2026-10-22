@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# Compile script for Hydrogen kernel
-# Brought to you by rio004
+# Original MT6893 kernel build script (adapted for agate-bakasu-susfs)
+# Original script credited to rio004; kernel provenance is Xiaomi MT6893 source
 #
 
 # Date/Time
@@ -11,7 +11,7 @@ DATE=$(date '+%Y%m%d-%H%M')
 # Device
 DEVICE="${1:-agate}"
 DEFCONFIG="${DEVICE}_defconfig"
-ZIPNAME="HydrogenKernel-${DEVICE}-${DATE}.zip"
+ZIPNAME="AgateBakaSU-${DEVICE}-${DATE}.zip"
 
 echo -e "Building for: $DEVICE\n"
 
@@ -33,7 +33,7 @@ for arg in "$@"; do
     case $arg in
         -c) CLEAN_BUILD=true ;;
         -ksu) INCLUDE_KSU=true
-             ZIPNAME="HydrogenKernel-KSU-${DEVICE}-${DATE}.zip"
+             ZIPNAME="AgateBakaSU-KSU-${DEVICE}-${DATE}.zip"
              ;;
     esac
 done
