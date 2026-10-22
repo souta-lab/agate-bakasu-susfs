@@ -26,7 +26,8 @@ This GitHub repository was created independently (**not a GitHub fork**). Develo
 
 ## Current state
 
-- GitHub project created, pending first tested BakaSU kernel import.
+- Independent repository created; the unmodified upstream kernel source snapshot is available on the [kernel-upstream-baseline](https://github.com/souta-lab/agate-bakasu-susfs/tree/kernel-upstream-baseline) branch (source commit: a94c15b31dc0).
+- Main intentionally contains documentation while BakaSU integration is developed and validated.
 - Known-good upstream-derived KernelSU Next + SUSFS 1.5.5 build exists locally, but it is not a BakaSU build.
 - The two reported kernel WARN events are under investigation; causes and patches are not yet verified.
 - This project's main branch will only carry documented project milestones and audited source, not an untested advertised release.
