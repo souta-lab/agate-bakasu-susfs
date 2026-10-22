@@ -1,5 +1,23 @@
 # agate-bakasu-susfs
 
+<p align="center">
+  <img alt="Linux 4.14.336" src="https://img.shields.io/badge/Linux-4.14.336-0d6efd?logo=linux&logoColor=white">
+  <img alt="SUSFS v2.3.0" src="https://img.shields.io/badge/SUSFS-v2.3.0-ff6a00">
+  <img alt="BakaSU v4.2.0-rc3" src="https://img.shields.io/badge/BakaSU-v4.2.0--rc3-dc3545">
+  <img alt="Android 16" src="https://img.shields.io/badge/Android-16-3ddc84?logo=android&logoColor=white">
+  <img alt="Xiaomi 11T agate" src="https://img.shields.io/badge/device-Xiaomi%2011T%20(agate)-ff6900">
+  <img alt="MediaTek MT6893" src="https://img.shields.io/badge/SoC-MediaTek%20MT6893-6f42c1">
+</p>
+<p align="center">
+  <img alt="Build passing" src="https://img.shields.io/badge/build-passing-brightgreen">
+  <img alt="Device boot verified" src="https://img.shields.io/badge/device%20boot-verified-success">
+  <img alt="Non-GKI port" src="https://img.shields.io/badge/port-non--GKI%20manual-important">
+  <img alt="Proton Clang 15" src="https://img.shields.io/badge/toolchain-Proton%20Clang%2015-6c757d">
+  <img alt="License GPL-2.0-only" src="https://img.shields.io/badge/license-GPL--2.0--only-blue">
+  <a href="../../stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/souta-lab/agate-bakasu-susfs?style=flat"></a>
+  <a href="../../forks"><img alt="Forks" src="https://img.shields.io/github/forks/souta-lab/agate-bakasu-susfs?style=flat"></a>
+</p>
+
 **Linux 4.14.336 kernel for Xiaomi 11T (agate / MT6893) — running BakaSU v4.2.0-rc3 + SUSFS v2.3.0 (non-GKI).**
 
 > **🎉 SUSFS v2.3.0 now runs on Linux 4.14.336 (non-GKI).**
@@ -11,6 +29,15 @@
 This is an independent source repository, not a GitHub fork. The source base is the
 Xiaomi MT6893 kernel tree distributed by [Scaffold47/agate-ksun-susfs](https://github.com/Scaffold47/agate-ksun-susfs).
 It is **not** a Hydrogen-derived integration.
+
+## Repository layout
+
+| Branch | Contents | Status |
+| --- | --- | --- |
+| `main` | Landing page (this README) | — |
+| `feature/susfs-2.3.4.14-port` | BakaSU + **SUSFS v2.3.0** (non-GKI manual port) | **Verified on device** |
+| `bakasu-susfs-4.14` | BakaSU + legacy SUSFS v1.5.5 | Boot-tested |
+| `bakasu-only-4.14` | BakaSU only, no SUSFS | Build-tested |
 
 ## Features
 
